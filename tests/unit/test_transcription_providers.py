@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import httpx
@@ -7,6 +8,7 @@ from voice_to_order.config import Settings
 from voice_to_order.domain import AudioFile, TranscriptionError
 from voice_to_order.transcription import build_providers
 from voice_to_order.transcription.providers import (
+    AssemblyAIProvider,
     DeepgramProvider,
     ReplayProvider,
     WhisperProvider,
@@ -103,3 +105,53 @@ async def test_registry_skips_providers_without_keys() -> None:
     async with httpx.AsyncClient() as client:
         providers = build_providers(settings, client, vocabulary=["OM-12"])
     assert [p.name for p in providers] == ["deepgram"]
+
+
+async def test_assemblyai_uploads_creates_job_and_polls(audio: AudioFile) -> None:
+    polls = iter(["queued", "processing", "completed"])
+    seen: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        if request.url.path == "/v2/upload":
+            return httpx.Response(200, json={"upload_url": "https://cdn/x"})
+        if request.method == "POST":
+            return httpx.Response(200, json={"id": "t1", "status": "queued"})
+        status = next(polls)
+        body = {"id": "t1", "status": status, "text": " Four cases. ", "confidence": 0.88}
+        return httpx.Response(200, json=body)
+
+    async with client_returning(httpx.MockTransport(handler)) as client:
+        provider = AssemblyAIProvider(
+            "aai-key", client, word_boost=["OM-12"], poll_interval_seconds=0
+        )
+        transcript = await provider.transcribe(audio)
+
+    assert transcript.text == "Four cases."
+    assert transcript.confidence == pytest.approx(0.88)
+    assert seen[0].content == b"RIFF....fake"
+    assert seen[0].headers["Authorization"] == "aai-key"
+    job = json.loads(seen[1].content)
+    assert job["audio_url"] == "https://cdn/x"
+    assert job["word_boost"] == ["OM-12"]
+    assert [r.url.path for r in seen[2:]] == ["/v2/transcript/t1"] * 3
+
+
+async def test_assemblyai_job_error(audio: AudioFile) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/v2/upload":
+            return httpx.Response(200, json={"upload_url": "u"})
+        if request.method == "POST":
+            return httpx.Response(200, json={"id": "t1"})
+        return httpx.Response(200, json={"status": "error", "error": "audio too short"})
+
+    async with client_returning(httpx.MockTransport(handler)) as client:
+        with pytest.raises(TranscriptionError, match="audio too short"):
+            await AssemblyAIProvider("k", client, poll_interval_seconds=0).transcribe(audio)
+
+
+async def test_assemblyai_missing_field(audio: AudioFile) -> None:
+    transport = httpx.MockTransport(lambda _: httpx.Response(200, json={}))
+    async with client_returning(transport) as client:
+        with pytest.raises(TranscriptionError, match="upload_url"):
+            await AssemblyAIProvider("k", client).transcribe(audio)

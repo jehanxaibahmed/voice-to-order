@@ -7,9 +7,15 @@ import httpx
 
 from voice_to_order.config import Settings
 from voice_to_order.transcription.base import TranscriptionProvider
-from voice_to_order.transcription.providers import DeepgramProvider, WhisperProvider
+from voice_to_order.transcription.providers import (
+    AssemblyAIProvider,
+    DeepgramProvider,
+    WhisperProvider,
+)
 
 logger = logging.getLogger(__name__)
+
+KNOWN_PROVIDERS = frozenset({"deepgram", "whisper", "assemblyai"})
 
 
 def build_providers(
@@ -35,7 +41,16 @@ def build_providers(
                     vocabulary_hint=", ".join(vocabulary) or None,
                 )
             )
-        elif name in {"deepgram", "whisper"}:
+        elif name == "assemblyai" and settings.assemblyai_api_key:
+            providers.append(
+                AssemblyAIProvider(
+                    settings.assemblyai_api_key.get_secret_value(),
+                    client,
+                    base_url=settings.assemblyai_base_url,
+                    word_boost=vocabulary,
+                )
+            )
+        elif name in KNOWN_PROVIDERS:
             logger.warning("skipping %s: no API key configured", name)
         else:
             logger.warning("skipping unknown transcription provider %r", name)

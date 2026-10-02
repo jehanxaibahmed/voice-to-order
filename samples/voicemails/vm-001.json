@@ -19,6 +19,7 @@
   },
   "transcripts": {
     "deepgram": "Hi, it's Sam from the Corner Deli, account 4471. Could I get four cases of oat milk and two trays of croissants for Tuesday, please. Thanks.",
-    "whisper": "Hi, it's Sam from the corner deli, account 4 4 7 1. Could I get for cases of oat milk and two trays of croissants for Thursday please? Thanks."
+    "whisper": "Hi, it's Sam from the corner deli, account 4 4 7 1. Could I get for cases of oat milk and two trays of croissants for Thursday please? Thanks.",
+    "assemblyai": "Hi it's Sam from the Corner Deli account 4471. Could I get four cases of oat milk and two trays of croissants for Tuesday please. Thanks."
   }
 }

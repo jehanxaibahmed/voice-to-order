@@ -23,6 +23,7 @@
   },
   "transcripts": {
     "deepgram": "Morning, account 2290, Harbour Kitchen. Three trays of free range eggs, two blocks of mature cheddar, and five boxes of salted butter. Tomorrow if you can. Cheers.",
-    "whisper": "Morning. Account 2290 Harbor Kitchen. Three trays of free range eggs, two blocks of mature cheddar and five boxes of salted butter. Tomorrow if you can. Cheers."
+    "whisper": "Morning. Account 2290 Harbor Kitchen. Three trays of free range eggs, two blocks of mature cheddar and five boxes of salted butter. Tomorrow if you can. Cheers.",
+    "assemblyai": "Morning account 2290 Harbour Kitchen. Three trays of free range eggs, two blocks of mature cheddar and five boxes of salted butter. Tomorrow, if you can. Cheers."
   }
 }

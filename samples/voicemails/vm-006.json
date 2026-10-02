@@ -19,6 +19,7 @@
   },
   "transcripts": {
     "deepgram": "Hiya, Marco at Piazza, account 6602. Four crates of semi skimmed milk and a dozen bags of espresso beans, the 500 gram ones. For the thirtieth, please.",
-    "whisper": "Hiya, Marco at Piazza, account 6602. Four crates of semi-skimmed milk and a dozen bags of espresso beans, the 500 gram ones. For the 13th, please."
+    "whisper": "Hiya, Marco at Piazza, account 6602. Four crates of semi-skimmed milk and a dozen bags of espresso beans, the 500 gram ones. For the 13th, please.",
+    "assemblyai": "Hiya Marco at Piazza account 6602. Four crates of semi skimmed milk and a dozen bags of espresso beans the five hundred gram ones. For the 13th please."
   }
 }
