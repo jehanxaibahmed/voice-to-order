@@ -1,0 +1,18 @@
+{
+  "products": [
+    {"sku": "OM-12", "name": "Barista oat milk 1L", "unit": "case of 6", "aliases": ["oat milk", "barista oat"]},
+    {"sku": "WM-01", "name": "Whole milk 2L", "unit": "crate of 12", "aliases": ["whole milk", "full fat milk"]},
+    {"sku": "SM-02", "name": "Semi-skimmed milk 2L", "unit": "crate of 12", "aliases": ["semi skimmed", "semi milk"]},
+    {"sku": "CB-500", "name": "Espresso coffee beans 500g", "unit": "bag", "aliases": ["coffee beans", "espresso beans"]},
+    {"sku": "CB-1K", "name": "Espresso coffee beans 1kg", "unit": "bag", "aliases": ["kilo coffee beans", "kilo of beans"]},
+    {"sku": "CR-24", "name": "All-butter croissants", "unit": "tray of 24", "aliases": ["croissants", "butter croissants"]},
+    {"sku": "SB-10", "name": "Sourdough bloomer", "unit": "loaf", "aliases": ["sourdough", "bloomer"]},
+    {"sku": "EG-30", "name": "Free-range eggs", "unit": "tray of 30", "aliases": ["eggs", "free range eggs"]},
+    {"sku": "BT-250", "name": "Salted butter 250g", "unit": "box of 40", "aliases": ["butter", "salted butter"]},
+    {"sku": "CC-2K", "name": "Mature cheddar block 2kg", "unit": "block", "aliases": ["cheddar", "mature cheddar"]},
+    {"sku": "TC-80", "name": "Paper takeaway cups 12oz", "unit": "sleeve of 50", "aliases": ["takeaway cups", "paper cups", "coffee cups"]},
+    {"sku": "TL-80", "name": "Takeaway cup lids 12oz", "unit": "sleeve of 50", "aliases": ["lids", "cup lids"]},
+    {"sku": "OJ-1L", "name": "Fresh orange juice 1L", "unit": "case of 6", "aliases": ["orange juice", "oj"]},
+    {"sku": "AV-04", "name": "Hass avocados", "unit": "box of 24", "aliases": ["avocados", "avos"]}
+  ]
+}
