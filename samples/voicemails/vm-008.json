@@ -1,0 +1,24 @@
+{
+  "id": "vm-008",
+  "received_at": "2026-10-12T09:00:00+01:00",
+  "caller_number": "+44 7700 900108",
+  "reference": "Hi, account 8034, The Larder. Just one block of cheddar and two trays of eggs, and could you deliver on Wednesday. Thanks a lot.",
+  "expected": {
+    "account_number": "8034",
+    "delivery_date": "2026-10-14",
+    "lines": [
+      [
+        "CC-2K",
+        1
+      ],
+      [
+        "EG-30",
+        2
+      ]
+    ]
+  },
+  "transcripts": {
+    "deepgram": "Hi, account 8034, The Larder. Just one block of cheddar and two trays of eggs. And could you deliver on Wednesday? Thanks a lot.",
+    "whisper": "Hi, account 8034, the larder. Just one block of cheddar and two trays of legs, and could you deliver on Wednesday? Thanks a lot."
+  }
+}

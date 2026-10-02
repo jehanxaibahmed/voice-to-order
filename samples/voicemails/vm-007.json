@@ -1,0 +1,24 @@
+{
+  "id": "vm-007",
+  "received_at": "2026-10-09T15:10:00+01:00",
+  "caller_number": "+44 7700 900107",
+  "reference": "It's Jo from Sunrise Bakery, account 7781. We need twenty trays of croissants and six cases of oat milk for Saturday. Please leave it at the side door.",
+  "expected": {
+    "account_number": "7781",
+    "delivery_date": "2026-10-10",
+    "lines": [
+      [
+        "CR-24",
+        20
+      ],
+      [
+        "OM-12",
+        6
+      ]
+    ]
+  },
+  "transcripts": {
+    "deepgram": "It's Joe from Sunrise Bakery, account 7781. We need twenty trays of croissants and six cases of oat milk for Saturday. Please leave it at the side door.",
+    "whisper": "It's Jo from Sunrise Bakery, account 7781. We need 20 trays of croissants and six cases of oat milk for Saturday. Please leave it at the side door."
+  }
+}

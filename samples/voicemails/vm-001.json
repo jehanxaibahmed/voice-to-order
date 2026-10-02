@@ -1,0 +1,24 @@
+{
+  "id": "vm-001",
+  "received_at": "2026-10-02T08:15:00+01:00",
+  "caller_number": "+44 7700 900101",
+  "reference": "Hi, it's Sam from the Corner Deli, account 4471. Could I get four cases of oat milk and two trays of croissants for Tuesday please. Thanks.",
+  "expected": {
+    "account_number": "4471",
+    "delivery_date": "2026-10-06",
+    "lines": [
+      [
+        "OM-12",
+        4
+      ],
+      [
+        "CR-24",
+        2
+      ]
+    ]
+  },
+  "transcripts": {
+    "deepgram": "Hi, it's Sam from the Corner Deli, account 4471. Could I get four cases of oat milk and two trays of croissants for Tuesday, please. Thanks.",
+    "whisper": "Hi, it's Sam from the corner deli, account 4 4 7 1. Could I get for cases of oat milk and two trays of croissants for Thursday please? Thanks."
+  }
+}
