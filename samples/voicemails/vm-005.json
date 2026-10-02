@@ -1,0 +1,24 @@
+{
+  "id": "vm-005",
+  "received_at": "2026-10-08T19:50:00+01:00",
+  "caller_number": "+44 7700 900105",
+  "reference": "Hello, Green Bowl, account 5120. Two boxes of avocados and three cases of orange juice. We don't need any eggs this week. Friday delivery please.",
+  "expected": {
+    "account_number": "5120",
+    "delivery_date": "2026-10-09",
+    "lines": [
+      [
+        "AV-04",
+        2
+      ],
+      [
+        "OJ-1L",
+        3
+      ]
+    ]
+  },
+  "transcripts": {
+    "deepgram": "Hello, Green Bowl, account 5120. Two boxes of avocados and three cases of orange juice. We don't need any eggs this week. Friday delivery, please.",
+    "whisper": "Hello, Green Bowl account 5 1 2 0. Two boxes of avocado's and three cases of orange juice. We don't need any eggs this week. Friday delivery please."
+  }
+}

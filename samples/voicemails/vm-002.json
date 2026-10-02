@@ -1,0 +1,28 @@
+{
+  "id": "vm-002",
+  "received_at": "2026-10-02T17:40:00+01:00",
+  "caller_number": "+44 7700 900102",
+  "reference": "Hello, this is Priya at Bean There Cafe. We need six bags of the one kilo espresso beans and ten sleeves of takeaway cups with lids. Delivery on the fourteenth of October if possible.",
+  "expected": {
+    "account_number": null,
+    "delivery_date": "2026-10-14",
+    "lines": [
+      [
+        "CB-1K",
+        6
+      ],
+      [
+        "TC-80",
+        10
+      ],
+      [
+        "TL-80",
+        10
+      ]
+    ]
+  },
+  "transcripts": {
+    "deepgram": "Hello, this is Priya at Been There Cafe. We need six bags of the one kilo espresso beans and ten sleeves of takeaway cups with lids. Delivery on the 14th of October if possible.",
+    "whisper": "Hello, this is Priya at Bean There Caf\u00e9. We need 6 bags of the 1 kilo espresso beans and 10 sleeves of take away cups with lids. Delivery on the 14th of October, if possible."
+  }
+}

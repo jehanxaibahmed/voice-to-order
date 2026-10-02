@@ -1,0 +1,28 @@
+{
+  "id": "vm-003",
+  "received_at": "2026-10-05T07:05:00+01:00",
+  "caller_number": "+44 7700 900103",
+  "reference": "Morning, account 2290, Harbour Kitchen. Three trays of free range eggs, two blocks of mature cheddar and five boxes of salted butter. Tomorrow if you can. Cheers.",
+  "expected": {
+    "account_number": "2290",
+    "delivery_date": "2026-10-06",
+    "lines": [
+      [
+        "EG-30",
+        3
+      ],
+      [
+        "CC-2K",
+        2
+      ],
+      [
+        "BT-250",
+        5
+      ]
+    ]
+  },
+  "transcripts": {
+    "deepgram": "Morning, account 2290, Harbour Kitchen. Three trays of free range eggs, two blocks of mature cheddar, and five boxes of salted butter. Tomorrow if you can. Cheers.",
+    "whisper": "Morning. Account 2290 Harbor Kitchen. Three trays of free range eggs, two blocks of mature cheddar and five boxes of salted butter. Tomorrow if you can. Cheers."
+  }
+}
