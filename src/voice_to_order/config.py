@@ -19,9 +19,11 @@ class Settings(BaseSettings):
     deepgram_model: str = "nova-3"
     openai_api_key: SecretStr | None = None
     whisper_model: str = "whisper-1"
+    assemblyai_api_key: SecretStr | None = None
+    assemblyai_base_url: str = "https://api.assemblyai.com"
 
     transcription_providers: Annotated[list[str], NoDecode] = Field(
-        default_factory=lambda: ["deepgram", "whisper"]
+        default_factory=lambda: ["deepgram", "whisper", "assemblyai"]
     )
     transcription_timeout_seconds: float = 60.0
 

@@ -23,6 +23,7 @@
   },
   "transcripts": {
     "deepgram": "Hello, this is Priya at Been There Cafe. We need six bags of the one kilo espresso beans and ten sleeves of takeaway cups with lids. Delivery on the 14th of October if possible.",
-    "whisper": "Hello, this is Priya at Bean There Caf\u00e9. We need 6 bags of the 1 kilo espresso beans and 10 sleeves of take away cups with lids. Delivery on the 14th of October, if possible."
+    "whisper": "Hello, this is Priya at Bean There Caf\u00e9. We need 6 bags of the 1 kilo espresso beans and 10 sleeves of take away cups with lids. Delivery on the 14th of October, if possible.",
+    "assemblyai": "Hello this is Priya at Bean There Cafe. We need six bags of the one kilo express o beans and ten sleeves of takeaway cups with lids. Delivery on the 14th of October if possible."
   }
 }
