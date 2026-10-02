@@ -17,6 +17,17 @@ from voice_to_order.transcription import TranscriptionRunner, build_providers
 DEFAULT_CATALOG = Path("samples/catalog.json")
 
 
+def build_llm(settings: Settings) -> ClaudeClient:
+    # With no explicit key the SDK falls back to ANTHROPIC_API_KEY or an `ant auth login` profile.
+    anthropic_client = anthropic.AsyncAnthropic(
+        api_key=settings.anthropic_api_key.get_secret_value()
+        if settings.anthropic_api_key
+        else None
+    )
+    effort: Effort = settings.llm_effort  # type: ignore[assignment]
+    return ClaudeClient(anthropic_client, model=settings.llm_model, effort=effort)
+
+
 def build_pipeline(
     settings: Settings, http_client: httpx.AsyncClient, *, catalog_path: Path = DEFAULT_CATALOG
 ) -> VoiceToOrderPipeline:
@@ -27,14 +38,7 @@ def build_pipeline(
             "no transcription providers configured: set at least one of "
             "VTO_DEEPGRAM_API_KEY, VTO_OPENAI_API_KEY, VTO_ASSEMBLYAI_API_KEY"
         )
-    # With no explicit key the SDK falls back to ANTHROPIC_API_KEY or an `ant auth login` profile.
-    anthropic_client = anthropic.AsyncAnthropic(
-        api_key=settings.anthropic_api_key.get_secret_value()
-        if settings.anthropic_api_key
-        else None
-    )
-    effort: Effort = settings.llm_effort  # type: ignore[assignment]
-    llm = ClaudeClient(anthropic_client, model=settings.llm_model, effort=effort)
+    llm = build_llm(settings)
     return VoiceToOrderPipeline(
         ingestor=AudioIngestor(
             settings.work_dir,

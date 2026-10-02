@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from typing import Any
 
 import anthropic
@@ -72,3 +73,21 @@ async def test_failures_become_llm_error(response: httpx2.Response, match: str) 
     client, _ = client_for(lambda _: response)
     with pytest.raises(LLMError, match=match):
         await client.structured(system="s", prompt="p", schema=Answer)
+
+
+async def test_missing_credentials_is_a_clear_llm_error(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # An empty home directory means no `ant auth login` profile on disk either.
+    for var in ("ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_PROFILE", "ANTHROPIC_CONFIG_DIR"):
+        monkeypatch.delenv(var, raising=False)
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / ".config"))
+    sdk = anthropic.AsyncAnthropic(
+        max_retries=0,
+        http_client=anthropic.DefaultAsyncHttpxClient(
+            transport=httpx2.MockTransport(lambda _: httpx2.Response(500))
+        ),
+    )
+    with pytest.raises(LLMError, match="no Anthropic credentials"):
+        await ClaudeClient(sdk).structured(system="s", prompt="p", schema=Answer)

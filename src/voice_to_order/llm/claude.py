@@ -53,6 +53,13 @@ class ClaudeClient:
             raise LLMError("could not reach the Claude API") from exc
         except ValidationError as exc:
             raise LLMError(f"response did not match {schema.__name__}") from exc
+        except TypeError as exc:
+            # The SDK raises TypeError at request time when it finds no credentials.
+            if "authentication" not in str(exc):
+                raise
+            raise LLMError(
+                "no Anthropic credentials: set ANTHROPIC_API_KEY (or VTO_ANTHROPIC_API_KEY)"
+            ) from exc
 
         if response.stop_reason == "refusal":
             raise LLMError("the request was declined by the model")

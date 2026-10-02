@@ -21,6 +21,34 @@ def _evaluate(args: argparse.Namespace) -> int:
     if args.json:
         args.json.write_text(report.model_dump_json(indent=2))
         print(f"\nDetailed results written to {args.json}")
+    if args.orders:
+        print("\nOrder accuracy (LLM consensus + extraction):\n")
+        return asyncio.run(_evaluate_orders(args))
+    return 0
+
+
+async def _evaluate_orders(args: argparse.Namespace) -> int:
+    from voice_to_order.bootstrap import build_llm
+    from voice_to_order.consensus import LLMReconciler
+    from voice_to_order.evaluation.orders import evaluate_orders
+    from voice_to_order.extraction import Catalog, OrderExtractor
+
+    llm = build_llm(get_settings())
+    catalog = Catalog.load(args.catalog)
+    report = await evaluate_orders(
+        load_samples(args.samples),
+        reconciler=LLMReconciler(llm),
+        extractor=OrderExtractor(llm, catalog),
+        catalog=catalog,
+        source=args.transcripts,
+    )
+    if report.failed == report.samples:
+        print(f"Every extraction failed: {report.comparisons[0].error}", file=sys.stderr)
+        return 1
+    print(report.to_markdown())
+    for comparison in report.comparisons:
+        if not comparison.exact:
+            print(f"- {comparison.sample_id}: {comparison.model_dump(exclude={'sample_id'})}")
     return 0
 
 
@@ -91,6 +119,12 @@ def build_parser() -> argparse.ArgumentParser:
         default="synthetic",
         help="hand-written transcripts, or real provider output saved by `record`",
     )
+    evaluate_cmd.add_argument(
+        "--orders",
+        action="store_true",
+        help="also score extracted orders (calls Claude; needs ANTHROPIC_API_KEY)",
+    )
+    evaluate_cmd.add_argument("--catalog", type=Path, default=Path("samples/catalog.json"))
     evaluate_cmd.set_defaults(handler=_evaluate)
 
     record_cmd = commands.add_parser(
