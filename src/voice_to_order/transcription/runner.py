@@ -39,7 +39,7 @@ class TranscriptionRunner:
         failures = [o for o in outcomes if isinstance(o, TranscriptionFailure)]
         if not transcripts:
             detail = "; ".join(f"{f.provider}: {f.error}" for f in failures)
-            raise TranscriptionError("all", f"every provider failed ({detail})")
+            raise TranscriptionError("transcription", f"every provider failed ({detail})")
         return TranscriptionResult(transcripts=transcripts, failures=failures)
 
     async def _run_one(
@@ -51,6 +51,9 @@ class TranscriptionRunner:
         except TimeoutError:
             logger.warning("%s timed out after %.0fs", provider.name, self._timeout)
             return TranscriptionFailure(provider=provider.name, error="timed out")
+        except TranscriptionError as exc:
+            logger.warning("%s failed: %s", provider.name, exc.message)
+            return TranscriptionFailure(provider=provider.name, error=exc.message)
         except Exception as exc:  # one provider must never sink the others
             logger.warning("%s failed: %s", provider.name, exc)
             return TranscriptionFailure(provider=provider.name, error=str(exc))

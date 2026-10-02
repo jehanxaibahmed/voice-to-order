@@ -155,3 +155,12 @@ async def test_assemblyai_missing_field(audio: AudioFile) -> None:
     async with client_returning(transport) as client:
         with pytest.raises(TranscriptionError, match="upload_url"):
             await AssemblyAIProvider("k", client).transcribe(audio)
+
+
+async def test_http_errors_are_short_and_omit_the_url(audio: AudioFile) -> None:
+    transport = httpx.MockTransport(lambda _: httpx.Response(401))
+    async with client_returning(transport) as client:
+        with pytest.raises(TranscriptionError) as caught:
+            await DeepgramProvider("k", client, keyterms=["OM-12"]).transcribe(audio)
+    assert caught.value.message == "HTTP 401 Unauthorized"
+    assert "keyterm" not in str(caught.value)

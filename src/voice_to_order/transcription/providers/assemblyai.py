@@ -10,6 +10,7 @@ from typing import Any
 import httpx
 
 from voice_to_order.domain import AudioFile, Transcript, TranscriptionError
+from voice_to_order.transcription.base import describe_http_error
 
 ASSEMBLYAI_URL = "https://api.assemblyai.com"
 
@@ -68,6 +69,8 @@ class AssemblyAIProvider:
             )
             response.raise_for_status()
             body: dict[str, Any] = response.json()
-        except (httpx.HTTPError, ValueError) as exc:
-            raise TranscriptionError(self.name, f"request failed: {exc}") from exc
+        except httpx.HTTPError as exc:
+            raise TranscriptionError(self.name, describe_http_error(exc)) from exc
+        except ValueError as exc:
+            raise TranscriptionError(self.name, "response was not JSON") from exc
         return body

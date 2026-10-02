@@ -42,6 +42,14 @@ class Catalog:
         """Product names and codes, used to bias transcription and prompts."""
         return [f"{p.sku} {p.name}" for p in self.products]
 
+    def keyterms(self) -> list[str]:
+        """Short terms to boost in speech recognition: SKUs, product names and aliases."""
+        terms: dict[str, None] = {}
+        for product in self.products:
+            for term in (product.sku, product.name, *product.aliases):
+                terms.setdefault(term, None)
+        return list(terms)
+
     def match(self, description: str, product_code: str | None = None) -> CatalogMatch | None:
         if product_code and (product := self._by_sku.get(_norm(product_code))):
             return CatalogMatch(product=product, score=1.0)

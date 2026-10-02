@@ -3,7 +3,7 @@
 import httpx
 
 from voice_to_order.domain import AudioFile, Transcript, TranscriptionError
-from voice_to_order.transcription.base import audio_mime_type
+from voice_to_order.transcription.base import audio_mime_type, describe_http_error
 
 WHISPER_URL = "https://api.openai.com/v1/audio/transcriptions"
 
@@ -40,7 +40,7 @@ class WhisperProvider:
             )
             response.raise_for_status()
         except httpx.HTTPError as exc:
-            raise TranscriptionError(self.name, f"request failed: {exc}") from exc
+            raise TranscriptionError(self.name, describe_http_error(exc)) from exc
 
         try:
             text = response.json()["text"]
