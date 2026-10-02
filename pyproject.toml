@@ -20,6 +20,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# av<17: faster-whisper 1.2.x calls av.open(metadata_errors=...), which av 19 rejects.
+local = ["faster-whisper>=1.0", "av<17"]
 dev = [
     "httpx2>=2.0",
     "mypy>=1.10",
@@ -55,3 +57,8 @@ strict = true
 mypy_path = "src"
 packages = ["voice_to_order"]
 plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+# Optional extra (`.[local]`); untyped and absent from the base install.
+module = ["faster_whisper"]
+ignore_missing_imports = true

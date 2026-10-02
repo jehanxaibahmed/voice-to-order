@@ -46,10 +46,12 @@ class TranscriptionRunner:
         self, provider: TranscriptionProvider, audio: AudioFile
     ) -> Transcript | TranscriptionFailure:
         started = time.perf_counter()
+        # A provider may declare its own timeout (e.g. local models on CPU).
+        timeout: float = getattr(provider, "timeout_seconds", None) or self._timeout
         try:
-            transcript = await asyncio.wait_for(provider.transcribe(audio), self._timeout)
+            transcript = await asyncio.wait_for(provider.transcribe(audio), timeout)
         except TimeoutError:
-            logger.warning("%s timed out after %.0fs", provider.name, self._timeout)
+            logger.warning("%s timed out after %.0fs", provider.name, timeout)
             return TranscriptionFailure(provider=provider.name, error="timed out")
         except TranscriptionError as exc:
             logger.warning("%s failed: %s", provider.name, exc.message)

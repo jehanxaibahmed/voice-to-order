@@ -2,7 +2,7 @@
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import AliasChoices, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
@@ -18,6 +18,12 @@ class Settings(BaseSettings):
     )
     llm_model: str = "claude-opus-5-5"
     llm_effort: str = "medium"
+    llm_provider: Literal["anthropic", "openai_compatible"] = "anthropic"
+    # For openai_compatible, e.g. Ollama: http://localhost:11434/v1 and a model such as
+    # qwen2.5:14b-instruct (set VTO_LLM_MODEL). The key is optional for local servers.
+    llm_base_url: str = "http://localhost:11434/v1"
+    llm_api_key: SecretStr | None = None
+    llm_timeout_seconds: float = 120.0
 
     deepgram_api_key: SecretStr | None = Field(
         default=None, validation_alias=AliasChoices("VTO_DEEPGRAM_API_KEY", "DEEPGRAM_API_KEY")
@@ -31,6 +37,11 @@ class Settings(BaseSettings):
         default=None, validation_alias=AliasChoices("VTO_ASSEMBLYAI_API_KEY", "ASSEMBLYAI_API_KEY")
     )
     assemblyai_base_url: str = "https://api.assemblyai.com"
+
+    local_whisper_model: str = "small"
+    local_whisper_compute_type: str = "int8"
+    local_whisper_device: str = "auto"
+    local_whisper_timeout_seconds: float = 300.0
 
     transcription_providers: Annotated[list[str], NoDecode] = Field(
         default_factory=lambda: ["deepgram", "whisper", "assemblyai"]
