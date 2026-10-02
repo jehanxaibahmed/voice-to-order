@@ -51,6 +51,34 @@ Keys can use the standard names (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `DEEPGRA
 `ASSEMBLYAI_API_KEY`) or the `VTO_` versions. At least one speech-to-text key is required, plus
 Anthropic credentials for consensus and extraction.
 
+### Run locally
+
+The pipeline can run with free local models, alone or beside the cloud providers.
+
+```bash
+pip install -e '.[local]'           # faster-whisper for in-process speech-to-text
+ollama pull qwen2.5:14b-instruct    # any OpenAI-compatible server works for the LLM
+```
+
+```bash
+VTO_TRANSCRIPTION_PROVIDERS=whisper-local       # add it to the list to compare with cloud providers
+VTO_LLM_PROVIDER=openai_compatible
+VTO_LLM_BASE_URL=http://localhost:11434/v1      # Ollama's default
+VTO_LLM_MODEL=qwen2.5:14b-instruct
+```
+
+- `whisper-local` needs no API key. The model (`VTO_LOCAL_WHISPER_MODEL`, default `small`) is
+  downloaded from the Hugging Face hub on first use. It has its own timeout
+  (`VTO_LOCAL_WHISPER_TIMEOUT_SECONDS`, default 300) because CPU inference and that first download
+  can outlast the cloud timeout.
+- The LLM client asks for JSON-schema constrained output and, if the server rejects
+  `response_format`, retries with the schema in the prompt. Smaller models make more extraction
+  mistakes than Claude, so check `needs_review` and run `voice-to-order evaluate` before trusting
+  them.
+- With a single provider the consensus step has nothing to compare, so orders are flagged for
+  review; list several providers to get real consensus.
+- The extra pins `av<17` because faster-whisper 1.2.x breaks with av 19.
+
 ### Command line
 
 ```bash

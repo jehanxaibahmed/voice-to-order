@@ -10,12 +10,13 @@ from voice_to_order.transcription.base import TranscriptionProvider
 from voice_to_order.transcription.providers import (
     AssemblyAIProvider,
     DeepgramProvider,
+    LocalWhisperProvider,
     WhisperProvider,
 )
 
 logger = logging.getLogger(__name__)
 
-KNOWN_PROVIDERS = frozenset({"deepgram", "whisper", "assemblyai"})
+KNOWN_PROVIDERS = frozenset({"deepgram", "whisper", "whisper-local", "assemblyai"})
 
 
 def build_providers(
@@ -48,6 +49,16 @@ def build_providers(
                     client,
                     base_url=settings.assemblyai_base_url,
                     word_boost=vocabulary,
+                )
+            )
+        elif name == "whisper-local":
+            providers.append(
+                LocalWhisperProvider(
+                    model_size=settings.local_whisper_model,
+                    compute_type=settings.local_whisper_compute_type,
+                    device=settings.local_whisper_device,
+                    vocabulary_hint=", ".join(vocabulary) or None,
+                    timeout_seconds=settings.local_whisper_timeout_seconds,
                 )
             )
         elif name in KNOWN_PROVIDERS:
