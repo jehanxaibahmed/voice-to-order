@@ -1,26 +1,14 @@
 import shutil
-import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
 
+from tests.helpers import make_tone
 from voice_to_order.audio import AudioIngestor, FFmpeg
 from voice_to_order.domain import AudioError, Voicemail
 
 pytestmark = pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg not installed")
-
-
-def make_tone(path: Path, *, seconds: float, sample_rate: int = 44_100, channels: int = 2) -> Path:
-    subprocess.run(
-        [
-            "ffmpeg", "-nostdin", "-y", "-v", "error",
-            "-f", "lavfi", "-i", f"sine=frequency=440:duration={seconds}:sample_rate={sample_rate}",
-            "-ac", str(channels), str(path),
-        ],
-        check=True,
-    )  # fmt: skip
-    return path
 
 
 def voicemail(path: Path) -> Voicemail:
