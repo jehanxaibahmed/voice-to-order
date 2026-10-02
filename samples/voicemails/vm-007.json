@@ -21,5 +21,8 @@
     "deepgram": "It's Joe from Sunrise Bakery, account 7781. We need twenty trays of croissants and six cases of oat milk for Saturday. Please leave it at the side door.",
     "whisper": "It's Jo from Sunrise Bakery, account 7781. We need 20 trays of croissants and six cases of oat milk for Saturday. Please leave it at the side door.",
     "assemblyai": "It's Jo from Sunrise Bakery account 7781. We need twenty trays of croissants and six cases of oat milk for Saturday. Please leave it at the site door."
+  },
+  "recorded_transcripts": {
+    "whisper": "It's Jo from Sunrise Bakery, account 7781. We need 20 trays of croissants and 6 cases of oat milk for Saturday. Please leave it at the side door."
   }
 }

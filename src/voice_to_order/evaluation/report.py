@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from pydantic import BaseModel
 
 from voice_to_order.consensus import RoverReconciler
-from voice_to_order.evaluation.dataset import Sample
+from voice_to_order.evaluation.dataset import Sample, TranscriptSource
 from voice_to_order.evaluation.metrics import cer, corpus_errors
 from voice_to_order.extraction import parse_delivery_date, vote_delivery_date
 
@@ -50,7 +50,10 @@ class EvaluationReport(BaseModel):
         return "\n".join(lines)
 
 
-def evaluate(samples: Sequence[Sample]) -> EvaluationReport:
+def evaluate(samples: Sequence[Sample], source: TranscriptSource = "synthetic") -> EvaluationReport:
+    samples = [s for s in samples if s.transcripts_for(source)]
+    if not samples:
+        raise ValueError(f"no samples have {source} transcripts")
     errors: dict[str, int] = defaultdict(int)
     words: dict[str, int] = defaultdict(int)
     cers: dict[str, list[float]] = defaultdict(list)
@@ -61,9 +64,11 @@ def evaluate(samples: Sequence[Sample]) -> EvaluationReport:
     for sample in samples:
         reference_day = sample.received_at.date()
         expected_date = sample.expected.delivery_date
-        result = sample.transcription_result()
+        result = sample.transcription_result(source)
         rover = RoverReconciler.vote(result.transcripts)
-        hypotheses = {**sample.transcripts, ROVER: rover.text}
+        hypotheses = dict(sample.transcripts_for(source))
+        if len(hypotheses) > 1:
+            hypotheses[ROVER] = rover.text
 
         detail = SampleDetail(id=sample.id, wer={}, dates_correct={})
         for name, text in hypotheses.items():

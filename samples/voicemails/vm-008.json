@@ -21,5 +21,8 @@
     "deepgram": "Hi, account 8034, The Larder. Just one block of cheddar and two trays of eggs. And could you deliver on Wednesday? Thanks a lot.",
     "whisper": "Hi, account 8034, the larder. Just one block of cheddar and two trays of legs, and could you deliver on Wednesday? Thanks a lot.",
     "assemblyai": "Hi account 8034 the Larder. Just one block of cheddar and two trays of eggs and could you deliver on Wednesday. Thanks a lot."
+  },
+  "recorded_transcripts": {
+    "whisper": "Hi, a count 8034, the larder, just 1 block of cheddar and 2 trays of eggs, and could you deliver em wednesday, thanks a lot"
   }
 }

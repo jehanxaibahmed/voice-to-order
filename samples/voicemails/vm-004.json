@@ -21,5 +21,8 @@
     "deepgram": "Hi, it's Tom from Little Loaf, account 3318. Can we have twelve sourdough bloomers and actually make that eight crates of whole milk, not six. Next Monday, please.",
     "whisper": "Hi, it's Tom from Little Loaf, account 3318. Can we have 12 sour dough bloomers and actually make that 8 crates of hole milk, not 6. Next Monday, please.",
     "assemblyai": "Hi it's Tom from Little Love account 3318. Can we have twelve sourdough bloomers and actually make that eight crates of whole milk not six. Next Monday please."
+  },
+  "recorded_transcripts": {
+    "whisper": "Hi its tom from little loaf, account 3318, can we have 12 sourdough bloomers and actually make that 8 crates of whole milk not 6, next monday please"
   }
 }

@@ -21,5 +21,8 @@
     "deepgram": "Hello, Green Bowl, account 5120. Two boxes of avocados and three cases of orange juice. We don't need any eggs this week. Friday delivery, please.",
     "whisper": "Hello, Green Bowl account 5 1 2 0. Two boxes of avocado's and three cases of orange juice. We don't need any eggs this week. Friday delivery please.",
     "assemblyai": "Hello Green Bowl account 5120. Two boxes of avocados and free cases of orange juice. We don't need any eggs this week. Friday delivery please."
+  },
+  "recorded_transcripts": {
+    "whisper": "Hello, Green Bowl, a count 5120, 2 boxes of avocados and 3 cases of orange juice, we don't need any eggs this week, Friday delivery please."
   }
 }
