@@ -4,22 +4,32 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Annotated
 
-from pydantic import Field, SecretStr, field_validator
+from pydantic import AliasChoices, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="VTO_", env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="VTO_", env_file=".env", extra="ignore", populate_by_name=True
+    )
 
-    anthropic_api_key: SecretStr | None = None
+    anthropic_api_key: SecretStr | None = Field(
+        default=None, validation_alias=AliasChoices("VTO_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY")
+    )
     llm_model: str = "claude-opus-5-5"
     llm_effort: str = "medium"
 
-    deepgram_api_key: SecretStr | None = None
+    deepgram_api_key: SecretStr | None = Field(
+        default=None, validation_alias=AliasChoices("VTO_DEEPGRAM_API_KEY", "DEEPGRAM_API_KEY")
+    )
     deepgram_model: str = "nova-3"
-    openai_api_key: SecretStr | None = None
+    openai_api_key: SecretStr | None = Field(
+        default=None, validation_alias=AliasChoices("VTO_OPENAI_API_KEY", "OPENAI_API_KEY")
+    )
     whisper_model: str = "whisper-1"
-    assemblyai_api_key: SecretStr | None = None
+    assemblyai_api_key: SecretStr | None = Field(
+        default=None, validation_alias=AliasChoices("VTO_ASSEMBLYAI_API_KEY", "ASSEMBLYAI_API_KEY")
+    )
     assemblyai_base_url: str = "https://api.assemblyai.com"
 
     transcription_providers: Annotated[list[str], NoDecode] = Field(

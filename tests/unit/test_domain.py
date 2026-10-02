@@ -28,3 +28,13 @@ def test_settings_split_provider_csv(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("VTO_TRANSCRIPTION_PROVIDERS", "deepgram, whisper ,")
     settings = Settings(_env_file=None)  # type: ignore[call-arg]
     assert settings.transcription_providers == ["deepgram", "whisper"]
+
+
+def test_settings_accept_standard_key_names(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "standard")
+    monkeypatch.setenv("VTO_DEEPGRAM_API_KEY", "prefixed")
+    settings = Settings(_env_file=None)  # type: ignore[call-arg]
+    assert settings.openai_api_key is not None
+    assert settings.openai_api_key.get_secret_value() == "standard"
+    assert settings.deepgram_api_key is not None
+    assert settings.deepgram_api_key.get_secret_value() == "prefixed"
