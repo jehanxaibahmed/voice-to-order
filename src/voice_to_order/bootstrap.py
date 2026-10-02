@@ -21,7 +21,7 @@ def build_pipeline(
     settings: Settings, http_client: httpx.AsyncClient, *, catalog_path: Path = DEFAULT_CATALOG
 ) -> VoiceToOrderPipeline:
     catalog = Catalog.load(catalog_path)
-    providers = build_providers(settings, http_client, vocabulary=catalog.vocabulary())
+    providers = build_providers(settings, http_client, vocabulary=catalog.keyterms())
     if not providers:
         raise RuntimeError(
             "no transcription providers configured: set at least one of "

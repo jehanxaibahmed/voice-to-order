@@ -73,3 +73,13 @@ def test_requires_unique_providers() -> None:
         TranscriptionRunner([])
     with pytest.raises(ValueError):
         TranscriptionRunner([StubProvider("a"), StubProvider("a")])
+
+
+class FailingProvider(StubProvider):
+    async def transcribe(self, audio: AudioFile) -> Transcript:
+        raise TranscriptionError(self.name, "HTTP 401 Unauthorized")
+
+
+async def test_failure_message_is_not_prefixed_twice() -> None:
+    result = await TranscriptionRunner([StubProvider("ok", "hi"), FailingProvider("dg")]).run(AUDIO)
+    assert result.failures[0].error == "HTTP 401 Unauthorized"

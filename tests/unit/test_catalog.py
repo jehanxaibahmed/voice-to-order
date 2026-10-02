@@ -41,3 +41,9 @@ def test_unknown_code_falls_back_to_description(catalog: Catalog) -> None:
 
 def test_vocabulary_lists_codes_and_names(catalog: Catalog) -> None:
     assert "OM-12 Barista oat milk 1L" in catalog.vocabulary()
+
+
+def test_keyterms_are_short_and_unique(catalog: Catalog) -> None:
+    terms = catalog.keyterms()
+    assert {"OM-12", "Barista oat milk 1L", "oat milk"} <= set(terms)
+    assert len(terms) == len(set(terms))

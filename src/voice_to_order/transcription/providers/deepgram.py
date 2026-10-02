@@ -5,7 +5,7 @@ from collections.abc import Sequence
 import httpx
 
 from voice_to_order.domain import AudioFile, Transcript, TranscriptionError
-from voice_to_order.transcription.base import audio_mime_type
+from voice_to_order.transcription.base import audio_mime_type, describe_http_error
 
 DEEPGRAM_URL = "https://api.deepgram.com/v1/listen"
 
@@ -50,7 +50,7 @@ class DeepgramProvider:
             )
             response.raise_for_status()
         except httpx.HTTPError as exc:
-            raise TranscriptionError(self.name, f"request failed: {exc}") from exc
+            raise TranscriptionError(self.name, describe_http_error(exc)) from exc
 
         try:
             alternative = response.json()["results"]["channels"][0]["alternatives"][0]
