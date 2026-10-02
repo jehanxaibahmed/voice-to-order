@@ -25,3 +25,16 @@ jobs:
         run: mypy
       - name: Test
         run: pytest -q
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t voice-to-order:ci .
+      - name: Smoke test
+        run: |
+          docker run -d --name vto -p 8000:8000 voice-to-order:ci
+          for i in $(seq 1 30); do curl -sf localhost:8000/health && exit 0; sleep 1; done
+          docker logs vto
+          exit 1

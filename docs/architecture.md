@@ -9,7 +9,7 @@ flowchart LR
     A[Voicemail upload] --> B[Audio ingestion<br/>ffmpeg → 16 kHz mono WAV]
     B --> C1[Deepgram]
     B --> C2[Whisper]
-    B --> C3[...more providers]
+    B --> C3[AssemblyAI]
     C1 & C2 & C3 --> D[Transcript consensus<br/>LLM, with ROVER fallback]
     D --> E[Order extraction<br/>LLM structured output + catalogue match]
     C1 & C2 & C3 --> F[Delivery date vote<br/>one date per transcript, majority wins]
@@ -28,8 +28,9 @@ src/voice_to_order/
 ├── llm/                 # LLM client protocol, Claude client, scripted fake for tests
 ├── consensus/           # Transcript reconciliation (LLM + ROVER word voting)
 ├── extraction/          # Order extraction, catalogue matching, delivery date vote
-├── evaluation/          # WER/CER metrics and the provider accuracy report
+├── evaluation/          # WER/CER, provider and order accuracy, recorder for real output
 ├── pipeline.py          # Orchestrates the stages for one voicemail
+├── bootstrap.py         # Builds the production pipeline from settings
 ├── api/                 # FastAPI app
 ├── worker/              # Background job queue and job store
 └── cli.py               # `voice-to-order` command
@@ -45,4 +46,8 @@ src/voice_to_order/
 - **Flag, don't guess.** When providers disagree on the delivery date or an order line does not
   match the catalogue, the order is marked `needs_review` with a reason, rather than silently
   picking one.
+- **Vote with independent signals.** The delivery date is parsed from each provider's
+  transcript separately. Voting needs at least three engines to overrule one that is wrong.
+- **Measure what matters.** WER is scored on number-normalised text, and order-level accuracy
+  (SKU, quantity, account, date) is the headline metric.
 - **Synthetic data only.** Everything in `samples/` is invented.
