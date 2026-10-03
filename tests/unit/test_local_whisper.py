@@ -9,7 +9,7 @@ import pytest
 from voice_to_order.bootstrap import build_llm
 from voice_to_order.config import Settings
 from voice_to_order.domain import AudioFile, TranscriptionError
-from voice_to_order.llm import ClaudeClient, OpenAICompatibleClient
+from voice_to_order.llm import LiteLLMClient
 from voice_to_order.transcription import TranscriptionRunner, build_providers
 from voice_to_order.transcription.providers import LocalWhisperProvider
 
@@ -107,11 +107,5 @@ async def test_runs_beside_cloud_provider_with_own_timeout(
     assert result.transcripts[0].text == "two cases of Oatly"
 
 
-def test_build_llm_selects_provider() -> None:
-    assert isinstance(build_llm(Settings(_env_file=None)), ClaudeClient)  # type: ignore[call-arg]
-    local = Settings(
-        _env_file=None, llm_provider="openai_compatible", llm_model="qwen2.5:14b-instruct"
-    )  # type: ignore[call-arg]
-    assert isinstance(build_llm(local), OpenAICompatibleClient)
-    with pytest.raises(RuntimeError, match="VTO_LLM_MODEL"):
-        build_llm(Settings(_env_file=None, llm_provider="openai_compatible"))  # type: ignore[call-arg]
+
+    

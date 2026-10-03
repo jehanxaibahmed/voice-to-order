@@ -2,7 +2,7 @@
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Annotated, Literal
+from typing import Annotated
 
 from pydantic import AliasChoices, Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
@@ -13,15 +13,8 @@ class Settings(BaseSettings):
         env_prefix="VTO_", env_file=".env", extra="ignore", populate_by_name=True
     )
 
-    anthropic_api_key: SecretStr | None = Field(
-        default=None, validation_alias=AliasChoices("VTO_ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY")
-    )
-    llm_model: str = "claude-opus-5-5"
-    llm_effort: str = "medium"
-    llm_provider: Literal["anthropic", "openai_compatible"] = "anthropic"
-    # For openai_compatible, e.g. Ollama: http://localhost:11434/v1 and a model such as
-    # qwen2.5:14b-instruct (set VTO_LLM_MODEL). The key is optional for local servers.
-    llm_base_url: str = "http://localhost:11434/v1"
+    llm_model: str = "anthropic/claude-3-5-sonnet-20241022"
+    llm_base_url: str | None = None
     llm_api_key: SecretStr | None = None
     llm_timeout_seconds: float = 120.0
 
