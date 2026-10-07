@@ -13,7 +13,7 @@ class Settings(BaseSettings):
         env_prefix="VTO_", env_file=".env", extra="ignore", populate_by_name=True
     )
 
-    llm_model: str = "anthropic/claude-3-5-sonnet-20241022"
+    llm_model: str = "qwen2.5-coder:14b"
     llm_base_url: str | None = "http://localhost:5080/v1"
     llm_api_key: SecretStr | None = None
     llm_timeout_seconds: float = 120.0
