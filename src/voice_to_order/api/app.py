@@ -8,7 +8,8 @@ from pathlib import Path
 from typing import Annotated
 
 import httpx
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile, status
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, Security, UploadFile, status
+from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 
 from voice_to_order.audio import SUPPORTED_EXTENSIONS
@@ -33,6 +34,15 @@ def _default_processor(settings: Settings, client: httpx.AsyncClient) -> Process
     return build_pipeline(settings, client)
 
 
+api_key_header = APIKeyHeader(name="X-API-Key")
+
+
+def verify_api_key(api_key: str = Security(api_key_header)) -> str:
+    if api_key != get_settings().api_key_secret:
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+    return api_key
+
+
 def create_app(
     settings: Settings | None = None,
     processor_factory: ProcessorFactory = _default_processor,
@@ -53,12 +63,21 @@ def create_app(
                 await worker.stop()
 
     app = FastAPI(title="Voice to Order", version="0.1.0", lifespan=lifespan)
+    
+    from fastapi.middleware.cors import CORSMiddleware
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     @app.get("/health")
     async def health() -> dict[str, str]:
         return {"status": "ok"}
 
-    @app.post("/voicemails", status_code=status.HTTP_202_ACCEPTED)
+    @app.post("/voicemails", status_code=status.HTTP_202_ACCEPTED, dependencies=[Depends(verify_api_key)])
     async def upload_voicemail(
         request: Request,
         file: Annotated[UploadFile, File(description="Voicemail audio")],
@@ -84,11 +103,11 @@ def create_app(
         )
         return JobAccepted(job_id=job.id, status=job.status, status_url=f"/jobs/{job.id}")
 
-    @app.get("/jobs/{job_id}")
+    @app.get("/jobs/{job_id}", dependencies=[Depends(verify_api_key)])
     async def get_job(job_id: str) -> Job:
         return await _require_job(store, job_id)
 
-    @app.get("/jobs/{job_id}/order")
+    @app.get("/jobs/{job_id}/order", dependencies=[Depends(verify_api_key)])
     async def get_order(job_id: str) -> Order:
         job = await _require_job(store, job_id)
         if job.status is JobStatus.FAILED:

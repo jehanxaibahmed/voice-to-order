@@ -14,9 +14,10 @@ class Settings(BaseSettings):
     )
 
     llm_model: str = "anthropic/claude-3-5-sonnet-20241022"
-    llm_base_url: str | None = None
+    llm_base_url: str | None = "http://localhost:5080/v1"
     llm_api_key: SecretStr | None = None
     llm_timeout_seconds: float = 120.0
+    api_key_secret: str = "secret-key"
 
     deepgram_api_key: SecretStr | None = Field(
         default=None, validation_alias=AliasChoices("VTO_DEEPGRAM_API_KEY", "DEEPGRAM_API_KEY")
