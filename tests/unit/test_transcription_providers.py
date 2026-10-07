@@ -23,7 +23,7 @@ def audio(tmp_path: Path) -> AudioFile:
     return AudioFile(path=path, format="wav", sample_rate=16_000, channels=1, duration_seconds=3)
 
 
-def client_returning(handler: httpx.MockTransport) -> httpx.AsyncClient:
+def client_returning(handler: httpx.simulatorTransport) -> httpx.AsyncClient:
     return httpx.AsyncClient(transport=handler)
 
 
@@ -37,7 +37,7 @@ async def test_deepgram_sends_audio_and_keyterms(audio: AudioFile) -> None:
         ]}]}}  # fmt: skip
         return httpx.Response(200, json=body)
 
-    async with client_returning(httpx.MockTransport(handler)) as client:
+    async with client_returning(httpx.simulatorTransport(handler)) as client:
         provider = DeepgramProvider("dg-key", client, keyterms=["OM-12", "Oatly"])
         transcript = await provider.transcribe(audio)
 
@@ -51,14 +51,14 @@ async def test_deepgram_sends_audio_and_keyterms(audio: AudioFile) -> None:
 
 
 async def test_deepgram_http_error_becomes_transcription_error(audio: AudioFile) -> None:
-    transport = httpx.MockTransport(lambda _: httpx.Response(401, json={"err": "bad key"}))
+    transport = httpx.simulatorTransport(lambda _: httpx.Response(401, json={"err": "bad key"}))
     async with client_returning(transport) as client:
         with pytest.raises(TranscriptionError, match="deepgram"):
             await DeepgramProvider("k", client).transcribe(audio)
 
 
 async def test_deepgram_unexpected_shape(audio: AudioFile) -> None:
-    transport = httpx.MockTransport(lambda _: httpx.Response(200, json={"results": {}}))
+    transport = httpx.simulatorTransport(lambda _: httpx.Response(200, json={"results": {}}))
     async with client_returning(transport) as client:
         with pytest.raises(TranscriptionError, match="unexpected response"):
             await DeepgramProvider("k", client).transcribe(audio)
@@ -71,7 +71,7 @@ async def test_whisper_posts_multipart_with_prompt(audio: AudioFile) -> None:
         seen["request"] = request
         return httpx.Response(200, json={"text": "Two cases of oat milk."})
 
-    async with client_returning(httpx.MockTransport(handler)) as client:
+    async with client_returning(httpx.simulatorTransport(handler)) as client:
         provider = WhisperProvider("oa-key", client, vocabulary_hint="Oatly, OM-12")
         transcript = await provider.transcribe(audio)
 
@@ -88,7 +88,7 @@ async def test_whisper_network_error(audio: AudioFile) -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         raise httpx.ConnectError("boom", request=request)
 
-    async with client_returning(httpx.MockTransport(handler)) as client:
+    async with client_returning(httpx.simulatorTransport(handler)) as client:
         with pytest.raises(TranscriptionError, match="whisper"):
             await WhisperProvider("k", client).transcribe(audio)
 
@@ -121,7 +121,7 @@ async def test_assemblyai_uploads_creates_job_and_polls(audio: AudioFile) -> Non
         body = {"id": "t1", "status": status, "text": " Four cases. ", "confidence": 0.88}
         return httpx.Response(200, json=body)
 
-    async with client_returning(httpx.MockTransport(handler)) as client:
+    async with client_returning(httpx.simulatorTransport(handler)) as client:
         provider = AssemblyAIProvider(
             "aai-key", client, word_boost=["OM-12"], poll_interval_seconds=0
         )
@@ -145,20 +145,20 @@ async def test_assemblyai_job_error(audio: AudioFile) -> None:
             return httpx.Response(200, json={"id": "t1"})
         return httpx.Response(200, json={"status": "error", "error": "audio too short"})
 
-    async with client_returning(httpx.MockTransport(handler)) as client:
+    async with client_returning(httpx.simulatorTransport(handler)) as client:
         with pytest.raises(TranscriptionError, match="audio too short"):
             await AssemblyAIProvider("k", client, poll_interval_seconds=0).transcribe(audio)
 
 
 async def test_assemblyai_missing_field(audio: AudioFile) -> None:
-    transport = httpx.MockTransport(lambda _: httpx.Response(200, json={}))
+    transport = httpx.simulatorTransport(lambda _: httpx.Response(200, json={}))
     async with client_returning(transport) as client:
         with pytest.raises(TranscriptionError, match="upload_url"):
             await AssemblyAIProvider("k", client).transcribe(audio)
 
 
 async def test_http_errors_are_short_and_omit_the_url(audio: AudioFile) -> None:
-    transport = httpx.MockTransport(lambda _: httpx.Response(401))
+    transport = httpx.simulatorTransport(lambda _: httpx.Response(401))
     async with client_returning(transport) as client:
         with pytest.raises(TranscriptionError) as caught:
             await DeepgramProvider("k", client, keyterms=["OM-12"]).transcribe(audio)

@@ -1,4 +1,4 @@
-"""Replays stored transcripts. Used for offline demos, evaluation and tests."""
+"""Replays stored transcripts. Used for offline showcases, evaluation and tests."""
 
 from collections.abc import Mapping
 
