@@ -8,7 +8,17 @@ from pathlib import Path
 from typing import Annotated
 
 import httpx
-from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, Security, UploadFile, status
+from fastapi import (
+    Depends,
+    FastAPI,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    Security,
+    UploadFile,
+    status,
+)
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 
@@ -34,13 +44,14 @@ def _default_processor(settings: Settings, client: httpx.AsyncClient) -> Process
     return build_pipeline(settings, client)
 
 
-api_key_header = APIKeyHeader(name="X-API-Key")
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
-def verify_api_key(api_key: str = Security(api_key_header)) -> str:
-    if api_key != get_settings().api_key_secret:
+def verify_api_key(api_key: str | None = Security(api_key_header)) -> str:
+    secret = get_settings().api_key_secret
+    if secret and api_key != secret:
         raise HTTPException(status_code=401, detail="Invalid API Key")
-    return api_key
+    return api_key or ""
 
 
 def create_app(
@@ -63,8 +74,9 @@ def create_app(
                 await worker.stop()
 
     app = FastAPI(title="Voice to Order", version="0.1.0", lifespan=lifespan)
-    
+
     from fastapi.middleware.cors import CORSMiddleware
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -77,7 +89,11 @@ def create_app(
     async def health() -> dict[str, str]:
         return {"status": "ok"}
 
-    @app.post("/voicemails", status_code=status.HTTP_202_ACCEPTED, dependencies=[Depends(verify_api_key)])
+    @app.post(
+        "/voicemails",
+        status_code=status.HTTP_202_ACCEPTED,
+        dependencies=[Depends(verify_api_key)],
+    )
     async def upload_voicemail(
         request: Request,
         file: Annotated[UploadFile, File(description="Voicemail audio")],

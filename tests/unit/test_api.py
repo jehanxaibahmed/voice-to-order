@@ -34,7 +34,7 @@ def client_with(settings: Settings, processor: Processor) -> Iterator[TestClient
     def factory(_: Settings, __: httpx.AsyncClient) -> Processor:
         return processor
 
-    with TestClient(create_app(settings, factory)) as client:
+    with TestClient(create_app(settings, factory), headers={"X-API-Key": "secret-key"}) as client:
         yield client
 
 

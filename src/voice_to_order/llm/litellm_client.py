@@ -1,13 +1,13 @@
-from typing import TypeVar, Any
-import json
+from typing import Any, TypeVar
 
-from pydantic import BaseModel
 import litellm
+from pydantic import BaseModel
 
 from voice_to_order.domain import LLMError
 from voice_to_order.llm.base import LLMClient
 
 T = TypeVar("T", bound=BaseModel)
+
 
 class LiteLLMClient(LLMClient):
     def __init__(
@@ -29,26 +29,23 @@ class LiteLLMClient(LLMClient):
             kwargs["api_key"] = self.api_key
         if self.base_url:
             kwargs["api_base"] = self.base_url
-            
+
         kwargs["response_format"] = schema
 
         messages = [
             {"role": "system", "content": system},
             {"role": "user", "content": prompt},
         ]
-        
+
         try:
             response = await litellm.acompletion(
-                model=self.model,
-                messages=messages,
-                timeout=self.timeout,
-                **kwargs
+                model=self.model, messages=messages, timeout=self.timeout, **kwargs
             )
-            
+
             content = response.choices[0].message.content
             if not content:
                 raise LLMError("Empty response from model")
-                
+
             return schema.model_validate_json(content)
         except Exception as exc:
             raise LLMError(f"LLM request failed: {exc}") from exc
